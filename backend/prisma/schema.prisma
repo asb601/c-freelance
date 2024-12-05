@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String // Optional
+  email       String   @unique
+  password    String
+  phoneNumber String // Optional
+  address     String // Optional
+  cart        Cart?
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  categoryId  String?  // Optional foreign key to Category
+  category    Category? @relation(fields: [categoryId], references: [id]) // Relation to Category
+  stock       Int
+  images      String[]
+  cartItems   CartItem[]  // Relation to CartItem
+  orderItems  OrderItem[] // Relation to OrderItem
+  sales       Sale[]      // Relation to Sale
+  analysis    Analysis[]  // Relation to Analysis
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  total     Float    @default(0) // Optional: To store total price
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1) // Default quantity
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  orderItems   OrderItem[]
+  totalAmount  Float
+  paymentId    String
+  payment      Payment  @relation(fields: [paymentId], references: [id])
+  status       String   // e.g., "Pending", "Completed", "Cancelled"
+  createdAt    DateTime @default(now())
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  paymentMethod String    // e.g., "Credit Card", "PayPal"
+  status        String    // e.g., "Paid", "Failed"
+  transactionId String    @unique
+  amount        Float
+  order         Order[]   // Relation to orders
+  createdAt     DateTime  @default(now())
+}
+
+model Sale {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  quantity   Int
+  totalPrice Float
+  createdAt  DateTime @default(now())
+}
+
+model Analysis {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  views       Int
+  purchases   Int
+  revenue     Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  products    Product[] // Relation to Product
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
