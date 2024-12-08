@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../redux/userSlice"; // Adjust path as needed
+import { registerUser } from "../../redux/userSlice"; // Adjust the path as needed
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -11,7 +12,7 @@ export default function Signup() {
     phoneNumber: "",
     address: "",
   });
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -27,7 +28,6 @@ export default function Signup() {
       return;
     }
 
-    // Dispatch the registerUser action
     dispatch(registerUser({ name, email, password, phoneNumber, address }))
       .unwrap()
       .then(() => {
@@ -40,6 +40,8 @@ export default function Signup() {
           phoneNumber: "",
           address: "",
         });
+        navigate("/login");
+
       })
       .catch((error) => {
         console.error("Registration error:", error);
@@ -65,7 +67,7 @@ export default function Signup() {
           <form onSubmit={handleSignup} className="space-y-6">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900">
                 Name
               </label>
               <div className="mt-2">
@@ -76,14 +78,14 @@ export default function Signup() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                 Email Address
               </label>
               <div className="mt-2">
@@ -95,14 +97,14 @@ export default function Signup() {
                   onChange={handleChange}
                   required
                   autoComplete="email"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                 Password
               </label>
               <div className="mt-2">
@@ -114,14 +116,14 @@ export default function Signup() {
                   onChange={handleChange}
                   required
                   autoComplete="new-password"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="confirmPassword" className="block text-sm/6 font-medium text-gray-900">
                 Confirm Password
               </label>
               <div className="mt-2">
@@ -133,14 +135,14 @@ export default function Signup() {
                   onChange={handleChange}
                   required
                   autoComplete="new-password"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
             </div>
 
             {/* Phone Number */}
             <div>
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="phoneNumber" className="block text-sm/6 font-medium text-gray-900">
                 Phone Number
               </label>
               <div className="mt-2">
@@ -151,14 +153,14 @@ export default function Signup() {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   required
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
             </div>
 
             {/* Address */}
             <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="address" className="block text-sm/6 font-medium text-gray-900">
                 Address
               </label>
               <div className="mt-2">
@@ -169,7 +171,7 @@ export default function Signup() {
                   value={formData.address}
                   onChange={handleChange}
                   required
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900"
+                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
               </div>
             </div>
@@ -178,7 +180,7 @@ export default function Signup() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Sign Up
               </button>

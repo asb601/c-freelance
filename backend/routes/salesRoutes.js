@@ -6,15 +6,15 @@ import {
   getTopSellingProducts,
   getLowStockProducts,
 } from "../controllers/salesController.js";
-import { authenticate } from "../middlewares/authMiddlewares.js"; // Optional authentication
+// Optional authentication
 
 const router = express.Router();
 
 // Analytics routes
-router.get("/analytics/products-sold", authenticate, getTotalProductsSold);
-router.get("/analytics/revenue", authenticate, getRevenueAnalytics);
-router.get("/analytics/products-by-category", authenticate, getProductsUploadedByCategory);
-router.get("/analytics/top-products", authenticate, getTopSellingProducts);
-router.get("/analytics/low-stock", authenticate, getLowStockProducts);
+router.get("/analytics/products-sold",  getTotalProductsSold);
+router.get("/analytics/revenue",  getRevenueAnalytics);
+router.get("/analytics/products-by-category",  getProductsUploadedByCategory);
+router.get("/analytics/top-products", getTopSellingProducts);
+router.get("/analytics/low-stock",  getLowStockProducts);
 
 export default router;

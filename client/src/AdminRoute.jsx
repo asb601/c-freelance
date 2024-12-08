@@ -2,7 +2,9 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Headers from "./components/Headers";
 import Contacts from "./pages/User/Contacts";
-
+import CricketBats from "./pages/User/CricketBats";
+import Kits from "./pages/User/Kits";
+import Jerseys from "./pages/User/Jerseys";
 import Login from "./pages/User/Login";
 import Signup from "./pages/User/Signup";
 import Home from "./pages/User/Home";
@@ -16,23 +18,20 @@ import AdminHome from "./pages/Admin/AdminHome"; // Admin Home
 import AddProduct from "./pages/Admin/AddProduct"; // Admin Add Product
 import AdminDashboard from "./pages/Admin/AdminDashboard"; // Admin Dashboard
 
-export default function App() {
+
+
+export default function AdminRoutes() {
   return (
     <>
-      {/* Navigation Header */}
-      <Headers />
-      {/* User Routes */}
+    
+      {/* Admin Routes */}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contact" element={<Contacts />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/AllProducts" element={<ProductPage />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/" element={<AdminHome />} />
+        <Route path="/login" element={<AdminLogin />} />
+        <Route path="/signup" element={<AdminSignup />} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
       </Routes>
     </>
   );
 }
-
-

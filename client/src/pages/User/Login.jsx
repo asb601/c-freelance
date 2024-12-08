@@ -22,7 +22,7 @@ export default function Login() {
 
       if (response.ok) {
         alert("Login successful!");
-        navigate("/home");
+        navigate("/");
       } else {
         alert(data.message || "Login failed!");
       }
