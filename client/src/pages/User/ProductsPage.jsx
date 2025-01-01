@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchProducts } from "../../redux/productSlice";
 import { Link } from "react-router-dom";
 import { ShoppingBag } from 'lucide-react';
 import { useTheme } from "../../components/ThemeContext";
+import axios from 'axios';
 
 const ProductPage = () => {
-  const dispatch = useDispatch();
-  const { items: products, loading, error } = useSelector((state) => state.products);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const { theme } = useTheme();
 
@@ -18,9 +18,24 @@ const ProductPage = () => {
     "Jersey": "jersey"
   };
 
+  // Fetch products with axios
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get("http://localhost:3000/api/products/products", {
+          withCredentials: true,
+        });
+        setProducts(response.data);
+      } catch (err) {
+        setError("Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const filteredProducts =
     selectedFilter === "All"
@@ -28,9 +43,7 @@ const ProductPage = () => {
       : products.filter((product) => product.category?.name === categoryMap[selectedFilter]);
 
   return (
-    <div className={`min-h-screen ${
-      theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black'
-    }`}>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <h1 className="text-3xl font-bold mb-8">All Products</h1>
@@ -71,9 +84,7 @@ const ProductPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <Link to={`/product/${product.id}`} key={product.id}>
-              <div className={`rounded-lg overflow-hidden group hover:transform hover:scale-105 transition-all duration-300 ${
-                theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
-              }`}>
+              <div className={`rounded-lg overflow-hidden group hover:transform hover:scale-105 transition-all duration-300 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
                 <div className="relative aspect-w-1 aspect-h-1">
                   <img
                     src={product.images?.[0] || "/api/placeholder/400/400"}
@@ -98,9 +109,7 @@ const ProductPage = () => {
                     </button>
                   </div>
                   {product.category && (
-                    <p className={`text-sm mt-2 ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
+                    <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {product.category.name}
                     </p>
                   )}

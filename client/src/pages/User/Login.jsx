@@ -1,34 +1,38 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-export default function Login() {
+export default function Signup() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault(); // Prevent form submission
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include", // Important for sending/receiving cookies
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/users/register",
+        {
+          name,
+          email,
+          password,
+          phoneNumber,
+          address,
+        }
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Login successful!");
-        navigate("/");
+      if (response.status === 201) {
+        alert("Signup successful! Please login.");
+        navigate("/login"); // Redirect to login page
       } else {
-        alert(data.message || "Login failed!");
+        alert(response.data.message || "Signup failed!");
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("An error occurred. Please try again later.");
+      console.error("Error during signup:", error);
+      alert(error.response?.data?.message || "An error occurred. Please try again later.");
     }
   };
 
@@ -42,12 +46,14 @@ export default function Login() {
             className="mx-auto h-10 w-auto"
           />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-            Login
+            Sign Up
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleSignup} className="space-y-6">
+           
+
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                 Email address
@@ -58,7 +64,6 @@ export default function Login() {
                   name="email"
                   type="email"
                   required
-                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -76,7 +81,6 @@ export default function Login() {
                   name="password"
                   type="password"
                   required
-                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -84,23 +88,25 @@ export default function Login() {
               </div>
             </div>
 
+         
+            
             <div>
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Login
+                Sign Up
               </button>
             </div>
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
-            Don’t have an account?{" "}
+            Already have an account?{" "}
             <button
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate("/login")}
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Register
+              Login
             </button>
           </p>
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import { useTheme } from "../../components/ThemeContext";
+import axios from "axios";
 
 const ProductDetailsPage = () => {
   const { theme } = useTheme();
@@ -17,21 +18,13 @@ const ProductDetailsPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `http://localhost:3000/api/products/products/${id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
+          { withCredentials: true }
         );
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Failed to fetch product");
-        }
-        const data = await response.json();
-        setProduct(data);
-        if (data.images && data.images.length > 0) {
-          setSelectedImage(data.images[0]);
+        setProduct(response.data);
+        if (response.data.images && response.data.images.length > 0) {
+          setSelectedImage(response.data.images[0]);
         }
       } catch (err) {
         setError(err.message);
@@ -48,22 +41,18 @@ const ProductDetailsPage = () => {
 
     setCartStatus("loading");
     try {
-      const response = await fetch("http://localhost:3000/api/products/cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ productId: product.id, quantity: 1 }),
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/products/cart",
+        { productId: product.id, quantity: 1 },
+        { headers: { "Content-Type": "application/json" }, withCredentials: true }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add product to cart");
+      if (response.status === 200) {
+        setCartStatus("success");
+        setTimeout(() => setCartStatus("idle"), 2000);
+      } else {
+        throw new Error("Failed to add product to cart");
       }
-
-      setCartStatus("success");
-      setTimeout(() => setCartStatus("idle"), 2000);
     } catch (err) {
       setError(err.message);
       setCartStatus("error");
@@ -236,4 +225,4 @@ const ProductDetailsPage = () => {
     </div>
   );
 };
-export default ProductDetailsPage
+export default ProductDetailsPage;

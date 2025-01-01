@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useTheme } from "../../components/ThemeContext";
+import axios from 'axios';
 
 export default function Cart() {
   const { theme } = useTheme();
@@ -13,20 +14,10 @@ export default function Cart() {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/products/getCart', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+        const response = await axios.get('http://localhost:3000/api/products/getCart', {
+          withCredentials: true,
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch cart items');
-        }
-
-        const data = await response.json();
-        setCartItems(data);
+        setCartItems(response.data);
       } catch (error) {
         console.error('Error fetching cart items:', error);
       }
@@ -39,22 +30,15 @@ export default function Cart() {
     if (newQuantity < 1) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/products/cart/${itemId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ quantity: newQuantity }),
-      });
-
-      if (response.ok) {
-        setCartItems((prevItems) =>
-          prevItems.map((item) =>
-            item.id === itemId ? { ...item, quantity: newQuantity } : item
-          )
-        );
-      }
+      const response = await axios.patch(`http://localhost:3000/api/products/cart/${itemId}`, 
+        { quantity: newQuantity }, 
+        { withCredentials: true }
+      );
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
     } catch (error) {
       console.error('Error updating quantity:', error);
     }
@@ -62,19 +46,12 @@ export default function Cart() {
 
   const handleRemove = async (itemId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/products/cart/${itemId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+      const response = await axios.delete(`http://localhost:3000/api/products/cart/${itemId}`, {
+        withCredentials: true,
       });
-
-      if (response.ok) {
-        setCartItems((prevItems) =>
-          prevItems.filter((item) => item.id !== itemId)
-        );
-      }
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.id !== itemId)
+      );
     } catch (error) {
       console.error('Error removing item from cart:', error);
     }
