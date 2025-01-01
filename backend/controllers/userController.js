@@ -56,12 +56,12 @@ export const loginUser = async (req, res) => {
       expiresIn: "1d",
     });
 
-    // Send token as HTTP-only secure cookie
+    // Send token as HTTP-only cookie
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
+      secure: true, // Set to 'true' for production (HTTPS required)
+      sameSite: "None", // Allow cross-origin cookie sharing
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
     res.status(200).json({ message: `${role || "User"} login successful` });
@@ -86,7 +86,7 @@ export const getUserProfile = async (req, res) => {
     try {
       // Retrieve the user ID from the authenticated user (req.user set by middleware)
       const userId = req.user.id;
-  
+      console.log(userId)
       // Fetch the user from the database
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -109,6 +109,49 @@ export const getUserProfile = async (req, res) => {
     } catch (error) {
       console.error("Error fetching user profile:", error.message);
       res.status(500).json({ message: "Failed to fetch user profile", error: error.message });
+    }
+  };
+  
+  export const getUserOrders = async (req, res) => {
+    try {
+      const userId = req.user.id; // Assuming `req.user` contains the authenticated user info
+  
+      // Fetch orders for the user
+      const orders = await prisma.order.findMany({
+        where: { userId },
+        include: {
+          orderItems: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  images: true, // Include product images if available
+                },
+              },
+            },
+          },
+          payment: {
+            select: {
+              id: true,
+              paymentMethod: true,
+              status: true,
+              amount: true,
+              transactionId: true,
+            },
+          },
+        },
+      });
+  
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({ message: "No orders found" });
+      }
+  
+      res.status(200).json(orders);
+    } catch (error) {
+      console.error("Error fetching user orders:", error.message);
+      res.status(500).json({ message: "Failed to fetch user orders", error: error.message });
     }
   };
   

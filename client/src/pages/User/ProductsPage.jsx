@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProducts } from "../../redux/productSlice";
-import { Link } from "react-router-dom"; // Import Link to enable navigation
+import { Link } from "react-router-dom";
+import { ShoppingBag } from 'lucide-react';
+import { useTheme } from "../../components/ThemeContext";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
   const { items: products, loading, error } = useSelector((state) => state.products);
+  const [selectedFilter, setSelectedFilter] = useState("All");
+  const { theme } = useTheme();
 
-  // Map UI display names to actual category names in DB
   const categoryMap = {
     "All": "All",
     "Cricket Bat": "bat",
@@ -15,103 +18,98 @@ const ProductPage = () => {
     "Jersey": "jersey"
   };
 
-  const [selectedFilter, setSelectedFilter] = useState("All");
-
-  // Fetch products on component mount
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // Filter products based on selected filter
   const filteredProducts =
     selectedFilter === "All"
       ? products
       : products.filter((product) => product.category?.name === categoryMap[selectedFilter]);
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <header className="bg-blue-600 text-white p-4">
-        <h1 className="text-xl sm:text-2xl font-bold">All Products</h1>
-      </header>
-      <main className="p-2 sm:p-6">
+    <div className={`min-h-screen ${
+      theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black'
+    }`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <h1 className="text-3xl font-bold mb-8">All Products</h1>
+
         {/* Filter Options */}
-        <div className="mb-4 sm:mb-6 flex space-x-2 sm:space-x-4">
-          <button
-            className={`px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base ${
-              selectedFilter === "All" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
-            }`}
-            onClick={() => setSelectedFilter("All")}
-          >
-            All
-          </button>
-          <button
-            className={`px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base ${
-              selectedFilter === "Cricket Bat" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
-            }`}
-            onClick={() => setSelectedFilter("Cricket Bat")}
-          >
-            Cricket Bat
-          </button>
-          <button
-            className={`px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base ${
-              selectedFilter === "Kit" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
-            }`}
-            onClick={() => setSelectedFilter("Kit")}
-          >
-            Kit
-          </button>
-          <button
-            className={`px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base ${
-              selectedFilter === "Jersey" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
-            }`}
-            onClick={() => setSelectedFilter("Jersey")}
-          >
-            Jerseys
-          </button>
+        <div className="flex flex-wrap gap-3 mb-8">
+          {Object.keys(categoryMap).map((category) => (
+            <button
+              key={category}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                selectedFilter === category
+                  ? 'bg-blue-600 text-white'
+                  : theme === 'dark'
+                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              onClick={() => setSelectedFilter(category)}
+            >
+              {category}
+            </button>
+          ))}
         </div>
 
         {/* Loading and Error States */}
-        {loading && <p className="text-sm sm:text-base text-gray-700">Loading products...</p>}
-        {error && <p className="text-red-500 text-sm sm:text-base">{error}</p>}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        )}
 
-        {/* Check if there are products to display */}
-        {!loading && !error && filteredProducts.length === 0 && (
-          <p className="text-center text-gray-700 text-sm sm:text-base">No products found.</p>
+        {error && (
+          <div className="text-red-500 text-center py-20">
+            {error}
+          </div>
         )}
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <Link to={`/product/${product.id}`} key={product.id}>
-              <div className="bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden transition-transform duration-200 hover:scale-105 hover:shadow-md group">
-                <div className="relative overflow-hidden">
-                  {product.isNew && (
-                    <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded">
-                      New
-                    </span>
-                  )}
+              <div className={`rounded-lg overflow-hidden group hover:transform hover:scale-105 transition-all duration-300 ${
+                theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+              }`}>
+                <div className="relative aspect-w-1 aspect-h-1">
                   <img
-                    src={
-                      product.images && product.images.length > 0
-                        ? product.images[0]
-                        : "https://via.placeholder.com/150"
-                    }
+                    src={product.images?.[0] || "/api/placeholder/400/400"}
                     alt={product.name}
-                    className="w-full h-40 object-contain bg-gray-100 transform group-hover:scale-105 transition-transform duration-200"
+                    className="w-full h-48 object-cover"
                   />
+                  {product.isNew && (
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                      NEW
+                    </div>
+                  )}
                 </div>
-                <div className="p-3 space-y-1">
-                  <h3 className="text-sm font-semibold text-gray-900">{product.name}</h3>
-                  <p className="text-red-600 text-sm font-semibold">${product.price}</p>
+                
+                <div className="p-4">
+                  <h3 className="text-lg font-medium mb-2">{product.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xl font-bold text-blue-500">${product.price}</p>
+                    <button className={`p-2 rounded-full transition-colors ${
+                      theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-200 hover:bg-gray-300'
+                    }`}>
+                      <ShoppingBag className="w-5 h-5" />
+                    </button>
+                  </div>
                   {product.category && (
-                    <p className="text-gray-600 text-xs">{product.category.name}</p>
+                    <p className={`text-sm mt-2 ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      {product.category.name}
+                    </p>
                   )}
                 </div>
               </div>
             </Link>
           ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

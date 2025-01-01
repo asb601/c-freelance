@@ -24,6 +24,6 @@ router.delete("/products/:id", deleteProduct); // Delete a product
 // Cart Routes (Keep `authenticate` here)
 router.post("/cart", authenticate, addToCart); // Add to cart
 router.delete("/cart/:id", authenticate, removeFromCart); // Remove from cart
-router.get("/cart/:userId", authenticate, getCart); // Get user's cart
+router.get("/getCart", authenticate, getCart); // Get user's cart
 
 export default router;
