@@ -6,7 +6,8 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/profile', authenticate, getUserProfile);
+
 router.put('/profileUpdate', authenticate, updateUserProfile);
-router.get("/orders", authenticate, getUserOrders); // Fetch user orders
+router.get('/profile', authenticate, getUserProfile);
+router.get('/orders', authenticate, getUserOrders);  // Note: plural 'orders' is more RESTful// Fetch user orders
 export default router;

@@ -13,6 +13,7 @@ export const authenticate = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET); // Verify the token
+    console.log(decoded)
     req.user = decoded; // Attach decoded user info to the request
 
     next(); // Proceed to the next middleware/route handler

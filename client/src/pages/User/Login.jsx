@@ -2,36 +2,33 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function Signup() {
-  const [name, setName] = useState("");
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
+  const [role, setRole] = useState(""); // Optional role field
   const navigate = useNavigate();
 
-  const handleSignup = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault(); // Prevent form submission
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/register",
+        "http://localhost:3000/api/users/login",
         {
-          name,
           email,
           password,
-          phoneNumber,
-          address,
-        }
+         
+        },
+        { withCredentials: true } // Include credentials for cross-origin cookies
       );
 
-      if (response.status === 201) {
-        alert("Signup successful! Please login.");
-        navigate("/login"); // Redirect to login page
+      if (response.status === 200) {
+        alert(response.data.message || "Login successful!");
+        navigate("/"); // Redirect to homepage or dashboard
       } else {
-        alert(response.data.message || "Signup failed!");
+        alert(response.data.message || "Login failed!");
       }
     } catch (error) {
-      console.error("Error during signup:", error);
+      console.error("Error during login:", error);
       alert(error.response?.data?.message || "An error occurred. Please try again later.");
     }
   };
@@ -46,14 +43,12 @@ export default function Signup() {
             className="mx-auto h-10 w-auto"
           />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-            Sign Up
+            Login
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form onSubmit={handleSignup} className="space-y-6">
-           
-
+          <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                 Email address
@@ -88,25 +83,26 @@ export default function Signup() {
               </div>
             </div>
 
-         
+            {/* Optional Role Field */}
             
+
             <div>
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Sign Up
+                Login
               </button>
             </div>
           </form>
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/signup")}
               className="font-semibold text-indigo-600 hover:text-indigo-500"
             >
-              Login
+              Sign Up
             </button>
           </p>
         </div>

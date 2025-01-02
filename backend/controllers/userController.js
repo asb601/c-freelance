@@ -82,38 +82,51 @@ export const updateUserProfile = async (req, res) => {
   });
   res.json(updatedUser);
 };
+
+
+
 export const getUserProfile = async (req, res) => {
-    try {
-      // Retrieve the user ID from the authenticated user (req.user set by middleware)
-      const userId = req.user.id;
-      console.log(userId)
-      // Fetch the user from the database
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phoneNumber: true,
-          address: true,
-          createdAt: true,
-          updatedAt: true,
-        }, // Specify fields to retrieve to avoid returning sensitive data
-      });
-  
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-  
-      res.status(200).json(user);
-    } catch (error) {
-      console.error("Error fetching user profile:", error.message);
-      res.status(500).json({ message: "Failed to fetch user profile", error: error.message });
+  try {
+    // Ensure `req.user` contains the decoded token
+    console.log("req.user in getUserProfile:", req.user);
+
+    // Extract user ID from the token
+    const userId = req.user.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: User ID is missing" });
     }
-  };
-  
+
+    // Fetch user profile from the database
+    const user = await prisma.user.findUnique({
+      where: { id: userId }, // Use the correct `id` field
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        address: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log(user)
+    // Send the user profile data
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user profile:", error.message);
+    res.status(500).json({ message: "Failed to fetch user profile", error: error.message });
+  }
+};
+
+
   export const getUserOrders = async (req, res) => {
     try {
+      console.log("entered")
       const userId = req.user.id; // Assuming `req.user` contains the authenticated user info
   
       // Fetch orders for the user
@@ -145,11 +158,13 @@ export const getUserProfile = async (req, res) => {
       });
   
       if (!orders || orders.length === 0) {
+        console.log("no orders foung ")
         return res.status(404).json({ message: "No orders found" });
       }
   
       res.status(200).json(orders);
     } catch (error) {
+      console.log("entered catch ")
       console.error("Error fetching user orders:", error.message);
       res.status(500).json({ message: "Failed to fetch user orders", error: error.message });
     }

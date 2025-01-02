@@ -17,4 +17,4 @@ export const useAuthNavigation = (targetPath) => {
   }, [loading, error, profile, navigate, targetPath]);
 
   return { isAuthenticated: !!profile, loading };
-};
+}; 
